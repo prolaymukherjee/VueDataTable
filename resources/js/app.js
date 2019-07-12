@@ -6,7 +6,25 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue');
+//window.Vue = require('vue');
+import Vue from 'vue'
+import VueProgressBar from 'vue-progressbar'
+
+const options = {
+    color: '#bffaf3',
+    failedColor: '#874b4b',
+    thickness: '5px',
+    transition: {
+        speed: '0.2s',
+        opacity: '0.6s',
+        termination: 300
+    },
+    autoRevert: true,
+    location: 'top',
+    inverse: false
+}
+
+Vue.use(VueProgressBar, options);
 
 /**
  * The following block of code may be used to automatically register your
@@ -21,6 +39,8 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('customer',require('./components/Customer.vue').default);
+Vue.component('modal',require('./components/Modal.vue').default);
+Vue.component('pagination',require('./components/PaginationComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

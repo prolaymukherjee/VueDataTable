@@ -41,6 +41,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('customer',require('./components/Customer.vue').default);
 Vue.component('modal',require('./components/Modal.vue').default);
 Vue.component('pagination',require('./components/PaginationComponent.vue').default);
+Vue.component('title',require('./components/Title.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

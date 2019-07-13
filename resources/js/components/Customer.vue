@@ -87,8 +87,6 @@
                 sessionStorage.setItem("iActive",this.data);
                 console.log('emited data',this.data);
             }
-
-
         }
     }
    

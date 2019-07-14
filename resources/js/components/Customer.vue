@@ -27,10 +27,10 @@
                                 <td>{{ alldata.address}}</td>
                                 <td>{{ alldata.total}}</td>
                                 <td class="text-center">
-                                    <button type="button" @click="add()" class="btn btn-info btn-sm">
+                                    <button type="button"  @click="show(alldata)" class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button type="button" @click="" class="btn btn-primary btn-sm">
+                                    <button type="button" @click="edit(alldata)" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button type="button"@click=""class="btn btn-danger btn-sm">
@@ -86,8 +86,38 @@
                 this.data = val;
                 sessionStorage.setItem("iActive",this.data);
                 console.log('emited data',this.data);
-            }
+            },
+            edit(alldata) {
+                this.editMode = true;
+                this.form.reset();
+                this.form.clear();
+                this.form.fill(alldata);
+                $("#myModal").modal("show");
+            },
+            update() {
+                this.$Progress.start();
+                this.form.busy = true;
+                this.form
+                    .put("/api/customers/" + this.form.id)
+                    .then(response => {
+                        this.getData();
+                        $("#myModal").modal("hide");
+                        if (this.form.successful) {
+                            this.$Progress.finish();
+                            this.$snotify.success("Data Successfully Updated", "Success");
+                        } else {
+                            this.$Progress.fail();
+                            this.$snotify.error(
+                                "Something went wrong try again later.",
+                                "Error"
+                            );
+                        }
+                    })
+                    .catch(e => {
+                        this.$Progress.fail();
+                        console.log(e);
+                });
+            },
         }
     }
-   
 </script>

@@ -1749,10 +1749,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       data: '',
+      query: "",
+      queryFiled: "name",
       alldata: [],
       pagination: {
         current_page: 1
@@ -1762,6 +1786,15 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     console.log("mounted", sessionStorage.iActive);
     console.log('getdata', this.getData());
+  },
+  watch: {
+    query: function query(newQ, old) {
+      if (newQ === "") {
+        this.getData();
+      } else {
+        this.searchData();
+      }
+    }
   },
   methods: {
     getData: function getData() {
@@ -1786,6 +1819,53 @@ __webpack_require__.r(__webpack_exports__);
       this.data = val;
       sessionStorage.setItem("iActive", this.data);
       console.log('emited data', this.data);
+    },
+    edit: function edit(alldata) {
+      this.editMode = true;
+      this.form.reset();
+      this.form.clear();
+      this.form.fill(alldata);
+      $("#myModal").modal("show");
+    },
+    update: function update() {
+      var _this2 = this;
+
+      this.$Progress.start();
+      this.form.busy = true;
+      this.form.put("/api/customers/" + this.form.id).then(function (response) {
+        _this2.getData();
+
+        $("#myModal").modal("hide");
+
+        if (_this2.form.successful) {
+          _this2.$Progress.finish();
+
+          _this2.$snotify.success("Data Successfully Updated", "Success");
+        } else {
+          _this2.$Progress.fail();
+
+          _this2.$snotify.error("Something went wrong try again later.", "Error");
+        }
+      })["catch"](function (e) {
+        _this2.$Progress.fail();
+
+        console.log(e);
+      });
+    },
+    searchData: function searchData() {
+      var _this3 = this;
+
+      this.$Progress.start();
+      axios.get("/api/search/customers/" + this.queryFiled + "/" + this.query + "?page=" + this.pagination.current_page).then(function (response) {
+        _this3.customers = response.data.data;
+        _this3.pagination = response.data.meta;
+
+        _this3.$Progress.finish();
+      })["catch"](function (e) {
+        console.log(e);
+
+        _this3.$Progress.fail();
+      });
     }
   }
 });
@@ -37294,11 +37374,95 @@ var render = function() {
               "div",
               { staticClass: "card-body" },
               [
+                _c("div", { staticClass: "mb-3" }, [
+                  _c("div", { staticClass: "row" }, [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-3" }, [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.queryFiled,
+                              expression: "queryFiled"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { id: "fileds" },
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.queryFiled = $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { attrs: { value: "name" } }, [
+                            _vm._v("Name")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "email" } }, [
+                            _vm._v("Email")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "phone" } }, [
+                            _vm._v("Phone")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "address" } }, [
+                            _vm._v("Address")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { attrs: { value: "total" } }, [
+                            _vm._v("Total")
+                          ])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-7" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.query,
+                            expression: "query"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text", placeholder: "Search" },
+                        domProps: { value: _vm.query },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.query = $event.target.value
+                          }
+                        }
+                      })
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
                 _c(
                   "table",
                   { staticClass: "table table-hover table-bordered" },
                   [
-                    _vm._m(0),
+                    _vm._m(1),
                     _vm._v(" "),
                     _c(
                       "tbody",
@@ -37326,7 +37490,7 @@ var render = function() {
                                 attrs: { type: "button" },
                                 on: {
                                   click: function($event) {
-                                    return _vm.add()
+                                    return _vm.show(alldata)
                                   }
                                 }
                               },
@@ -37338,7 +37502,11 @@ var render = function() {
                               {
                                 staticClass: "btn btn-primary btn-sm",
                                 attrs: { type: "button" },
-                                on: { click: function($event) {} }
+                                on: {
+                                  click: function($event) {
+                                    return _vm.edit(alldata)
+                                  }
+                                }
                               },
                               [_c("i", { staticClass: "fas fa-edit" })]
                             ),
@@ -37365,7 +37533,7 @@ var render = function() {
                       attrs: { pagination: _vm.pagination, offset: 5 },
                       on: {
                         paginate: function($event) {
-                          return _vm.getData()
+                          _vm.query === "" ? _vm.getData() : _vm.searchData()
                         }
                       }
                     })
@@ -37385,6 +37553,14 @@ var render = function() {
   )
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-2" }, [
+      _c("strong", [_vm._v("Search By :")])
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
